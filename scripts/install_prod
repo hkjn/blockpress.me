@@ -1,0 +1,10 @@
+set -euo pipefail
+mkdir -p /opt/bin
+echo "[ $(basename "$0") ] Installing binaries.."
+install bin/blockpress.me /opt/bin/
+install bin/redirector /opt/bin/
+echo "[ $(basename "$0") ] Updating systemd units.."
+cp units/*.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl restart redirector blockpress
+echo "[ $(basename "$0") ] All done."

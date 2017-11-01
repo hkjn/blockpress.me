@@ -1,0 +1,13 @@
+[Unit]
+Description=blockpress.me server
+After=network-online.target
+
+[Service]
+Environment=BLOCKPRESS_ADDR=":443"
+Environment=BLOCKPRESS_HOSTS='blockpress.me;anton.blockpress.me'
+ExecStart=/opt/bin/blockpress.me
+Restart=always
+
+[Install]
+WantedBy=network-online.target
+

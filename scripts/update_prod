@@ -1,0 +1,4 @@
+set -euo pipefail
+bash build
+scp -r bin scripts units core@blockpress.me:
+ssh core@blockpress.me sudo bash ./scripts/install_prod

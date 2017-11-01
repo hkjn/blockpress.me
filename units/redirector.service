@@ -1,0 +1,11 @@
+[Unit]
+Description=blockpress.me redirector server
+After=network-online.target
+
+[Service]
+ExecStart=/opt/bin/redirector
+Restart=always
+
+[Install]
+WantedBy=network-online.target
+
