@@ -1,7 +1,5 @@
 set -euo pipefail
-docker rm -f blockpress-prod || true
-docker run --name blockpress-prod -d -p 443:443 -p 80:80 \
-       -v /etc/secrets/acme:/etc/secrets/acme \
-       -e FILESERVER_HOSTS='blockpress.me;anton.blockpress.me' \
-       -e FILESERVER_ADDR=:443 \
-       -v $(pwd)/webroot:/var/www hkjn/fileserver
+export BLOCKPRESS_ADDR=":443"
+export BLOCKPRESS_HOSTS='blockpress.me;anton.blockpress.me'
+
+./blockpress.me
