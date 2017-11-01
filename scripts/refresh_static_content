@@ -1,0 +1,15 @@
+set -euo pipefail
+declare SLEEP_DURATION=${SLEEP_DURATION:-"1m"}
+mkdir -p src/github.com/miblodge
+cd src/github.com/miblodge
+if [[ ! -e projectb ]]; then
+	echo "[ $(basename "$0") ] Doing initial git clone.."
+	git clone https://github.com/miblodge/projectb
+fi
+cd projectb
+while true; do
+	echo "[ $(basename "$0") ] Pulling down any changes.."
+	git pull
+	echo "[ $(basename "$0") ] Sleeping ${SLEEP_DURATION}.."
+	sleep ${SLEEP_DURATION}
+done
