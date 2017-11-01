@@ -1,5 +1,6 @@
 set -euo pipefail
 declare SLEEP_DURATION=${SLEEP_DURATION:-"1m"}
+cd /opt
 mkdir -p src/github.com/miblodge
 cd src/github.com/miblodge
 if [[ ! -e projectb ]]; then
