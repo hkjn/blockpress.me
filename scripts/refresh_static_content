@@ -7,6 +7,10 @@ if [[ ! -e projectb ]]; then
 	echo "[ $(basename "$0") ] Doing initial git clone.."
 	git clone https://github.com/miblodge/projectb
 fi
+if [[ ! -e /var/www ]]; then
+	echo "[ $(basename "$0") ] Creating symlink.."
+	ln -s /opt/src/github.com/miblodge/projectb /var/www
+fi
 cd projectb
 while true; do
 	echo "[ $(basename "$0") ] Pulling down any changes.."

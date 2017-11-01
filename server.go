@@ -6,16 +6,45 @@ import (
 	"crypto/tls"
 	"log"
 	"net/http"
-	"strings"
 	"os"
 
 	"golang.org/x/crypto/acme/autocert"
 )
 
+var subdomains = []string{
+	"anton", "dana", "hkjn",
+}
+
+type multiHostHandler struct {
+	fileHandlers map[string]http.Handler
+}
+
+func (mhh multiHostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Got request for https://%s%s", r.Host, r.URL.Path)
+	inner, ok := mhh.fileHandlers[r.Host]
+	if !ok {
+		log.Printf("No domain %s, serving 404.\n", r.Host)
+		http.NotFound(w, r)
+		return
+	}
+	inner.ServeHTTP(w, r)
+}
+
 func main() {
-	filesDir := "/var/www"
-	fs := http.FileServer(http.Dir(filesDir))
-	http.Handle("/", fs)
+	hostnames := []string{
+		"blockpress.me",
+	}
+	fh := map[string]http.Handler{
+		"blockpress.me": http.FileServer(http.Dir("/var/www/root")),
+	}
+	for _, name := range subdomains {
+		sd := fmt.Sprintf("%s.blockpress.me", name)
+		fp := fmt.Sprintf("/var/www/%s", name)
+		log.Printf("Serving %q from file path %q..\n", sd, fp)
+		fh[sd] = http.FileServer(http.Dir(fp))
+		hostnames = append(hostnames, sd)
+	}
+	http.Handle("/", multiHostHandler{fh})
 
 	addr := os.Getenv("BLOCKPRESS_ADDR")
         if addr == "" {
@@ -25,16 +54,11 @@ func main() {
 		Addr: addr,
 	}
 	if addr == ":443" {
-		hostsenv := os.Getenv("BLOCKPRESS_HOSTS")
-		if hostsenv == "" {
-			log.Fatalf("BLOCKPRESS_HOSTS must be set to serve TLS.")
-		}
-		hosts := strings.Split(hostsenv, ";")
-		fmt.Printf("Serving TLS as %q..\n", hosts)
+		fmt.Printf("Serving TLS as %q..\n", hostnames)
 		m := autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
 			Cache:      autocert.DirCache("/etc/secrets/acme/"),
-			HostPolicy: autocert.HostWhitelist(hosts...),
+			HostPolicy: autocert.HostWhitelist(hostnames...),
 		}
 		s.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
 		log.Fatal(s.ListenAndServeTLS("", ""))
