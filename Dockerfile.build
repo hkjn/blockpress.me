@@ -7,8 +7,11 @@ ENV CGO_ENABLED=0
 WORKDIR /home/go/src/hkjn.me/blockpress.me/
 COPY *.go ./
 COPY ["vendor", "./vendor"]
+COPY ["redirector", "./redirector"]
 RUN go vet && \
-    go install
+    go install && \
+    go install ./redirector/...
 USER root
-CMD ["mv", "-v", "/home/go/bin/blockpress.me", "/build/"]
+WORKDIR /home/go/bin
+CMD ["mv", "-v", "blockpress.me", "redirector", "/build/"]
 

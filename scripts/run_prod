@@ -2,4 +2,4 @@ set -euo pipefail
 export BLOCKPRESS_ADDR=":443"
 export BLOCKPRESS_HOSTS='blockpress.me;anton.blockpress.me'
 
-./blockpress.me
+./bin/blockpress.me
