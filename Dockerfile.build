@@ -1,17 +1,19 @@
 #
 # Build image for blockpress.me.
 #
-FROM hkjn/golang
+FROM hkjn/golang:1.12.6
 
-ENV CGO_ENABLED=0
+ENV CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
 WORKDIR /home/go/src/hkjn.me/blockpress.me/
 COPY *.go ./
 COPY ["vendor", "./vendor"]
 COPY ["redirector", "./redirector"]
-RUN go vet && \
-    go install && \
+RUN  go install && \
     go install ./redirector/...
 USER root
-WORKDIR /home/go/bin
+WORKDIR /home/go/bin/linux_amd64/
+
 CMD ["mv", "-v", "blockpress.me", "redirector", "/build/"]
 
